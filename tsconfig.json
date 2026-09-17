@@ -1,11 +1,21 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "outDir": "./build",
-    "rootDir": "./src",
 
+    // "type": "module" in package.json means NodeNext resolution, not "bundler"
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+
+    // REQUIRED in TS 7: rootDir defaults to "./", which would emit build/src/app.js
+    // and break the existing "start": "node build/app.js" script
+    "rootDir": "./src",
+    "outDir": "./build",
+
+    // REQUIRED in TS 7: types defaults to [], so @types/node is NOT loaded unless listed
+    "types": ["node"],
+
+    // strict is already true by default in TS 7; stated explicitly so the intent
+    // survives a future default change
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -19,9 +29,11 @@
     "isolatedModules": true,
     "skipLibCheck": true,
 
+    // Emit declaration files — these are what carry your JSDoc to any consumer
+    "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
-    "types": ["node"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src"],
   "exclude": ["node_modules", "build"]
 }

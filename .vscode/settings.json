@@ -1,0 +1,13 @@
+{
+  // Typing /** above a declaration offers a JSDoc scaffold with params pre-filled.
+  // This is the single highest-leverage setting here — on by default, listed so
+  // nobody turns it off by accident.
+  "js/ts.suggest.jsdoc.enabled": true,
+
+  // The "0 references" CodeLens above each member — the same affordance you see
+  // in the Visual Studio screenshot. Off by default in VS Code.
+  "js/ts.referencesCodeLens.enabled": true,
+
+  // Pin the workspace TypeScript so the editor and `tsc` agree
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
+}
