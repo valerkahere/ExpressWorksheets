@@ -10,6 +10,15 @@ export class CarController {
       });
   };
 
+  getCarById = async (_req: Request, res: Response): Promise<void> => {
+    res
+      .status(200)
+      .json({
+        success: true,
+        data: 'get single car',
+      });
+  };
+
   createCar = async (req: Request, res: Response): Promise<void> => {
     res
       .status(200)
