@@ -7,20 +7,19 @@
 set -euo pipefail
 
 # USAGE
-#   bash scripts/auto-sync-file.sh <file1> [file2] [file3] ... [--push] [--dry-run]
+#   bash scripts/auto-sync-file.sh <file1> [file2] [file3] ... [--dry-run]
+#
+#   Pushes automatically -- any branch left ahead of its upstream gets
+#   pushed at the end of its turn, whether the extra commit(s) came from
+#   this run or were already sitting there unpushed from a previous one.
 #
 #   --dry-run   show which branches would change, commit nothing, push nothing
-#   --push      push any branch that ends up ahead of its upstream --
-#               whether the extra commit(s) came from this run or were
-#               already sitting there unpushed from a previous run
 
 files=()
-do_push=false
 dry_run=false
 
 for arg in "$@"; do
     case "$arg" in
-        --push) do_push=true ;;
         --dry-run) dry_run=true ;;
         *) files+=("$arg") ;;
     esac
@@ -110,21 +109,19 @@ for branch in $(git branch --format='%(refname:short)'); do
         fi
     fi
 
-    # push check runs regardless of whether this run made a new commit --
-    # it catches commits left unpushed from an earlier run too
-    if $do_push; then
-        if count=$(ahead_count); then
-            if [ "$count" -gt 0 ]; then
-                if $dry_run; then
-                    echo "   WOULD push $branch ($count commit(s) ahead of upstream)"
-                else
-                    git push origin "$branch"
-                    echo "   pushed to origin/$branch ($count commit(s))"
-                fi
+    # runs regardless of whether this run made a new commit -- catches
+    # commits left unpushed from an earlier run too
+    if count=$(ahead_count); then
+        if [ "$count" -gt 0 ]; then
+            if $dry_run; then
+                echo "   WOULD push $branch ($count commit(s) ahead of upstream)"
+            else
+                git push origin "$branch"
+                echo "   pushed to origin/$branch ($count commit(s))"
             fi
-        else
-            echo "   $branch: no upstream configured, skipping push (run: git push -u origin $branch)"
         fi
+    else
+        echo "   $branch: no upstream configured, skipping push (run: git push -u origin $branch)"
     fi
 done
 
