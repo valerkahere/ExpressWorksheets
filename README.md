@@ -4,6 +4,11 @@ Important:
 - **This project uses pnpm. If you use npm, it will fail.**
 - Setup commands **assume Linux/WSL Ubuntu environment**.
 
+## When you want to sync a file between all branches
+If it's a README or a repo script. Make edits on `main`, then use 
+```
+scripts/auto-sync-file.sh
+```
 
 ## Quick start (Node and pnpm already installed)
 
