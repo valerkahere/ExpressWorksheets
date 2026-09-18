@@ -3,7 +3,7 @@
 # Goal: Syncing a file across all branches
 # To apply and persist changes from a single file across all other branches exactly as it looks on main, you can pull that specific file directly from main while standing in your other branches.
 # You can use git checkout (or git restore) with a specific file path. This targets only that file without modifying or merging anything else from main.
-#!/bin/bash
+
 set -euo pipefail
 
 # USAGE
@@ -33,65 +33,74 @@ if [ ${#files[@]} -eq 0 ]; then
     exit 1
 fi
 
-# validate every file exists before touching any branch
-missing=()
-for f in "${files[@]}"; do
-    [ -e "$f" ] || missing+=("$f")
-done
-if [ ${#missing[@]} -gt 0 ]; then
-    echo "Not found on current branch (are you on main?): ${missing[*]}"
+original_branch=$(git branch --show-current)
+
+if [ "$original_branch" != "main" ]; then
+    echo "Run this from main."
     exit 1
 fi
 
-original_branch=$(git branch --show-current)
+# fail if any file isn't tracked on main -- no silent per-branch skipping
+missing=()
+for f in "${files[@]}"; do
+    git cat-file -e "main:$f" 2>/dev/null || missing+=("$f")
+done
+if [ ${#missing[@]} -gt 0 ]; then
+    echo "Not tracked on main: ${missing[*]}"
+    exit 1
+fi
 
 if [ -n "$(git status --porcelain)" ]; then
     echo "Working tree not clean. Commit or stash first."
     exit 1
 fi
 
-$dry_run && echo "🔍 Dry run — no commits or pushes will be made."
+$dry_run && echo "Dry run -- no commits or pushes will be made."
+
+# undo checkout's index+worktree change for one file on the current branch,
+# without assuming the file was ever tracked here before
+revert_file() {
+    local f="$1"
+    git reset --quiet -- "$f"
+    if git cat-file -e "HEAD:$f" 2>/dev/null; then
+        git checkout -- "$f"
+    else
+        rm -f -- "$f"
+    fi
+}
 
 for branch in $(git branch --format='%(refname:short)'); do
     [ "$branch" = "main" ] && continue
 
-    git switch "$branch"
+    git switch "$branch" --quiet
 
-    # restore only files that exist on main; skip ones that don't, per branch
-    present=()
     for f in "${files[@]}"; do
-        if git cat-file -e "main:$f" 2>/dev/null; then
-            git restore --source=main -- "$f"
-            present+=("$f")
-        else
-            echo "→ $branch: skipping '$f' (not on main)"
-        fi
+        git checkout main -- "$f"
     done
 
-    if [ ${#present[@]} -eq 0 ]; then
-        continue
-    fi
-
-    if git diff --cached -- "${present[@]}"; then
-        echo "→ $branch: already up to date (${present[*]})"
-        git restore --staged -- "${present[@]}"
+    if git diff --cached --quiet -- "${files[@]}"; then
+        echo "-> $branch: already up to date (${files[*]})"
+        for f in "${files[@]}"; do
+            revert_file "$f"
+        done
         continue
     fi
 
     changed=()
-    for f in "${present[@]}"; do
-        git diff --cached -- "$f" || changed+=("$f")
+    for f in "${files[@]}"; do
+        git diff --cached --quiet -- "$f" || changed+=("$f")
     done
 
     if $dry_run; then
-        echo "→ $branch: WOULD sync: ${changed[*]}"
-        git restore --staged -- "${present[@]}"
-        git checkout -- "${present[@]}" 2>/dev/null || true
+        echo "-> $branch: WOULD sync: ${changed[*]}"
+        for f in "${files[@]}"; do
+            revert_file "$f"
+        done
         continue
     fi
 
-    git commit -m "chore: sync ${changed[*]} from main [automated]"
-    echo "→ $branch: synced and committed (${changed[*]})"
+    git commit -m "chore: sync ${changed[*]} from main [automated]" --quiet
+    echo "-> $branch: synced and committed (${changed[*]})"
 
     if $do_push; then
         git push origin "$branch"
@@ -99,5 +108,5 @@ for branch in $(git branch --format='%(refname:short)'); do
     fi
 done
 
-git switch "$original_branch"
+git switch "$original_branch" --quiet
 echo "Done."
