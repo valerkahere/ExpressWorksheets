@@ -1,19 +1,22 @@
 # SETUP
 
-This project uses pnpm. If you use npm, it will fail.
+Important:
+- **This project uses pnpm. If you use npm, it will fail.**
+- Setup commands **assume Linux/WSL Ubuntu environment**.
+
 
 ## Quick start (Node and pnpm already installed)
 
 ```bash
-git clone <repo-url> valerkahere-site
-cd valerkahere-site
+git clone <repo-url> ExpressWorksheets
+cd ExpressWorksheets
 pnpm install
 pnpm dev
 ```
 
-That installs dependencies into `node_modules/` and starts the Astro dev server. Prints a local URL,  by default:
+That installs dependencies into `node_modules/` and starts the Astro dev server. Prints a local URL:
 ```
-http://localhost:4321
+http://localhost:<app-port>
 ```
 `Ctrl+C` stops it.
 
@@ -50,8 +53,8 @@ Recent Node releases still bundle Corepack, Node's built-in manager for pnpm/Yar
 ### 3. Clone and install
 
 ```bash
-git clone <repo-url> valerkahere-site
-cd valerkahere-site
+git clone <repo-url> ExpressWorksheets
+cd ExpressWorksheets
 pnpm install
 ```
 
