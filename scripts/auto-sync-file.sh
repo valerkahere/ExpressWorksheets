@@ -10,7 +10,9 @@ set -euo pipefail
 #   bash scripts/auto-sync-file.sh <file1> [file2] [file3] ... [--push] [--dry-run]
 #
 #   --dry-run   show which branches would change, commit nothing, push nothing
-#   --push      after committing on each branch, push it to origin
+#   --push      push any branch that ends up ahead of its upstream --
+#               whether the extra commit(s) came from this run or were
+#               already sitting there unpushed from a previous run
 
 files=()
 do_push=false
@@ -69,6 +71,14 @@ revert_file() {
     fi
 }
 
+# how many commits is the current branch ahead of its upstream.
+# empty output means no upstream configured at all.
+ahead_count() {
+    local upstream
+    upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null) || return 1
+    git rev-list --count "$upstream..HEAD"
+}
+
 for branch in $(git branch --format='%(refname:short)'); do
     [ "$branch" = "main" ] && continue
 
@@ -83,28 +93,38 @@ for branch in $(git branch --format='%(refname:short)'); do
         for f in "${files[@]}"; do
             revert_file "$f"
         done
-        continue
-    fi
-
-    changed=()
-    for f in "${files[@]}"; do
-        git diff --cached --quiet -- "$f" || changed+=("$f")
-    done
-
-    if $dry_run; then
-        echo "-> $branch: WOULD sync: ${changed[*]}"
+    else
+        changed=()
         for f in "${files[@]}"; do
-            revert_file "$f"
+            git diff --cached --quiet -- "$f" || changed+=("$f")
         done
-        continue
+
+        if $dry_run; then
+            echo "-> $branch: WOULD sync: ${changed[*]}"
+            for f in "${files[@]}"; do
+                revert_file "$f"
+            done
+        else
+            git commit -m "chore: sync ${changed[*]} from main [automated]" --quiet
+            echo "-> $branch: synced and committed (${changed[*]})"
+        fi
     fi
 
-    git commit -m "chore: sync ${changed[*]} from main [automated]" --quiet
-    echo "-> $branch: synced and committed (${changed[*]})"
-
+    # push check runs regardless of whether this run made a new commit --
+    # it catches commits left unpushed from an earlier run too
     if $do_push; then
-        git push origin "$branch"
-        echo "   pushed to origin/$branch"
+        if count=$(ahead_count); then
+            if [ "$count" -gt 0 ]; then
+                if $dry_run; then
+                    echo "   WOULD push $branch ($count commit(s) ahead of upstream)"
+                else
+                    git push origin "$branch"
+                    echo "   pushed to origin/$branch ($count commit(s))"
+                fi
+            fi
+        else
+            echo "   $branch: no upstream configured, skipping push (run: git push -u origin $branch)"
+        fi
     fi
 done
 
