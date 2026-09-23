@@ -8,7 +8,7 @@ const PORT = env.port;
 const app: Application = express();
 
 app.use(express.json());
-app.use('/api/v1/cars', carRoutes);
+app.use('/api/cars', carRoutes);
 
 app.get('/ping', async (_req: Request, res: Response) => {
   res.json({
