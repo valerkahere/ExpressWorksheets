@@ -1,10 +1,9 @@
 import express, { Application, Request, Response } from 'express';
 import carRoutes from './routes/cars.js';
 import { env } from './config/env.js';
-import mongoose from 'mongoose';
+import { connectDB } from './config/database.js';
 
 const PORT = env.port;
-const MONGODB_URI = env.mongoURI;
 
 const app: Application = express();
 
@@ -30,13 +29,7 @@ app.get('/auth', async (_req: Request, res: Response) => {
 });
 
 const startServer = async () => {
-  try {
-    await mongoose.connect(MONGODB_URI);
-    console.log('You successfully connected to MongoDB!');
-  } catch (err) {
-    console.dir(err);
-  }
-
+  await connectDB();
   app.listen(PORT, () => {
     console.log('Server is running on port', PORT);
   });
@@ -44,7 +37,4 @@ const startServer = async () => {
 
 startServer();
 
-// Call this only when your application terminates
-export async function disconnectFromMongoDB() {
-  await mongoose.connection.close();
-}
+
