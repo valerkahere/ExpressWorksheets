@@ -1,8 +1,10 @@
 import express, { Application, Request, Response } from 'express';
 import carRoutes from './routes/cars.js';
-import { env } from "./config/env.js";
+import { env } from './config/env.js';
+import mongoose from 'mongoose';
 
 const PORT = env.port;
+const MONGODB_URI = env.mongoURI;
 
 const app: Application = express();
 
@@ -27,6 +29,22 @@ app.get('/auth', async (_req: Request, res: Response) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log('Server is running on port', PORT);
-});
+const startServer = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log('You successfully connected to MongoDB!');
+  } catch (err) {
+    console.dir(err);
+  }
+
+  app.listen(PORT, () => {
+    console.log('Server is running on port', PORT);
+  });
+};
+
+startServer();
+
+// Call this only when your application terminates
+export async function disconnectFromMongoDB() {
+  await mongoose.connection.close();
+}
