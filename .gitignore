@@ -1,10 +1,3 @@
-# npm
-node_modules
-node_modules/
-package-lock.json
-*.log
-*.gz
-
 # Compiled output
 /dist
 dist/
@@ -22,6 +15,9 @@ build
 node_modules/
 npm-debug.log
 yarn-error.log
+package-lock.json
+*.log
+*.gz
 
 # IDEs and editors
 .idea/
