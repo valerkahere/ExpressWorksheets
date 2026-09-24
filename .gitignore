@@ -1,9 +1,52 @@
-# npm
-node_modules
+# Compiled output
+/dist
+dist/
+/tmp
+tmp/
+/out-tsc
+out-tsc/
+/bazel-out
+bazel-out
+build
+
+
+# Node / dependencies
+/node_modules
+node_modules/
+npm-debug.log
+yarn-error.log
 package-lock.json
 *.log
 *.gz
 
-# build folder
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-build
+# Miscellaneous
+.angular/
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# environment variables
+secrets
+secrets/
+.env
+.env.production
+.secrets/
+
