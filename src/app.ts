@@ -2,13 +2,14 @@ import express, { Application, Request, Response } from 'express';
 import carRoutes from './routes/cars.js';
 import { env } from './config/env.js';
 import { connectDB } from './config/database.js';
+import { authenticateKey } from './middleware/auth.middleware.js';
 
 const PORT = env.port;
 
 const app: Application = express();
 
 app.use(express.json());
-app.use('/api/cars', carRoutes);
+app.use('/api/cars', authenticateKey, carRoutes);
 
 app.get('/ping', async (_req: Request, res: Response) => {
   res.json({
@@ -36,5 +37,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-
