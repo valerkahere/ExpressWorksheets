@@ -23,6 +23,7 @@ x-api-key: blablabla
 @newCar = {{postACar.response.body._id}}
 
 ### creating a car: mongoDB validation, incomplete schema
+# if you send a POST request with more fields or missing one of the two required fields
 POST {{endpoint}} HTTP/1.1
 content-type: application/json
 x-api-key: blablabla
@@ -31,6 +32,17 @@ x-api-key: blablabla
     "make": "Toyota"
 }
 
+
+### creating a car: mongoDB validation, incomplete schema
+# What happens if one of the required fields is an empty string “”. - same error as before
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+x-api-key: blablabla
+
+{   
+    "make": "",
+    "model": "2201"
+}
 
 ### creating a car: App Exception, wrong json, trailing comma
 POST {{endpoint}} HTTP/1.1
@@ -41,6 +53,20 @@ x-api-key: blablabla
     "make": "Toyota",
 }
 
+### creating a car: mongoDB validation
+# with a string rather than a number for the year. - it succeeds!
+# if there is only a number
+# so like js. if it can be casted to a number, it will cast
+# if can't - keeps as string
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+x-api-key: blablabla
+
+{   
+    "make": "Toyota",
+    "model": "sdf",
+    "year": "1951b"
+}
 
 ###
 GET {{endpoint}}/{{newCar}} HTTP/3.0
