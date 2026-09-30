@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { CarController } from '../controllers/cars.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { createCarZSchema } from '../models/cars.js';
 
 const router = Router();
 const carController = new CarController();
 
 router.get('/', carController.getCars);
-router.post('/', carController.createCar);
+router.post('/', validate(createCarZSchema), carController.createCar);
 
 router.get('/:id', carController.getCarById);
 router.put('/:id', carController.updateCar);

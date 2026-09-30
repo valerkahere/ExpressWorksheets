@@ -68,6 +68,17 @@ x-api-key: blablabla
     "year": "1951b"
 }
 
+### this will fail for zod. it doesn't cast string to number. strict
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+x-api-key: blablabla
+
+{   
+    "make": "Toyota",
+    "model": "sdf",
+    "year": "1951"
+}
+
 ###
 GET {{endpoint}}/{{newCar}} HTTP/3.0
 Content-Type: application/json
