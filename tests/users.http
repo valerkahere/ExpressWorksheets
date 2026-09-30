@@ -8,15 +8,39 @@ content-type: application/json
 x-api-key: blablabla
 
 
-### creating a car
+### creating a car: working
 # @name postACar
 POST {{endpoint}} HTTP/1.1
 content-type: application/json
+x-api-key: blablabla
 
-{"make": "Toyota", "model": "Camry 2022"}
+{   
+    "make": "Toyota",
+    "model": "2030"
+}
 
 ###
 @newCar = {{postACar.response.body._id}}
+
+### creating a car: mongoDB validation, incomplete schema
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+x-api-key: blablabla
+
+{   
+    "make": "Toyota"
+}
+
+
+### creating a car: App Exception, wrong json, trailing comma
+POST {{endpoint}} HTTP/1.1
+content-type: application/json
+x-api-key: blablabla
+
+{   
+    "make": "Toyota",
+}
+
 
 ###
 GET {{endpoint}}/{{newCar}} HTTP/3.0
