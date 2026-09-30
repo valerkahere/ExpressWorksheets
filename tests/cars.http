@@ -83,7 +83,7 @@ content-type: application/json
 {"make": "UPDATED Ford", "model": "Mustang GT"}
 
 ### delete a car
-DELETE  {{endpoint}}/6ab42cf87de6ac8ecb09ead0 HTTP/3.0
+DELETE  {{endpoint}}/asdf HTTP/3.0
 content-type: application/json
 
 # dummy paths
