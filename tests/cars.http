@@ -88,10 +88,12 @@ GET  {{endpoint}}/sillycarID HTTP/3.0
 content-type: application/json
 
 ### update a car 
-PUT  {{endpoint}}/6ab42cf87de6ac8ecb09ead0 HTTP/3.0
+# will give invalid input cause zod don't cast
+PUT  {{endpoint}}/6ab42b6c7de6ac8ecb09eacf HTTP/3.0
 content-type: application/json
+x-api-key: blablabla
 
-{"make": "UPDATED Ford", "model": "Mustang GT"}
+{"make": "UPDATED Ford123", "model": "Mustang GT", "year": "2341234"}
 
 ### delete a car
 DELETE  {{endpoint}}/asdf HTTP/3.0

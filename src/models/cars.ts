@@ -23,3 +23,9 @@ export const createCarZSchema = z.object({
   model: z.string().min(1),
   year: z.number().min(1950).optional(),
 });
+
+export const updateCarZSchema = z.object({
+  make: z.string().min(1),
+  model: z.string().min(1),
+  year: z.number().min(1950).optional(),
+})
