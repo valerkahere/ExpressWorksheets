@@ -4,10 +4,17 @@ import { env } from './config/env.js';
 import { connectDB } from './config/database.js';
 import { authenticateKey } from './middleware/auth.middleware.js';
 import { logging } from './middleware/logging.middleware.js';
-
+import { swaggerSpec } from './config/swagger.js';
+import swaggerUi from 'swagger-ui-express'
 const PORT = env.port;
 
 const app: Application = express();
+
+app.use(
+'/api-docs',
+swaggerUi.serve,
+swaggerUi.setup(swaggerSpec)
+);
 
 app.use(express.json(), logging);
 
