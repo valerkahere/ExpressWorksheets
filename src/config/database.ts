@@ -11,13 +11,13 @@ export const connectDB = async (): Promise<void> => {
     console.log(`MongoDB Connected (Mongoose): ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${(error as Error).message}`);
-    disconnectFromMongoDB();
+    disconnectDB();
     process.exit(1);
   }
 };
 
 // Call this only when your application terminates
-export async function disconnectFromMongoDB() {
-  await mongoose.connection.close();
+export const disconnectDB = async (): Promise<void> => {
+  await mongoose.disconnect();
 }
 
