@@ -96,8 +96,10 @@ x-api-key: blablabla
 {"make": "UPDATED Ford123", "model": "Mustang GT", "year": "2341234"}
 
 ### delete a car
-DELETE  {{endpoint}}/asdf HTTP/3.0
+DELETE  {{endpoint}}/6ac60d67bace5b46107d0bc4 HTTP/3.0
 content-type: application/json
+x-api-key: blablabla
+
 
 # dummy paths
 ###
