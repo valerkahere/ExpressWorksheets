@@ -1,20 +1,14 @@
 import express, { Application, Request, Response } from 'express';
 import carRoutes from './routes/cars.js';
-import { env } from './config/env.js';
-import { connectDB } from './config/database.js';
+
 import { authenticateKey } from './middleware/auth.middleware.js';
 import { logging } from './middleware/logging.middleware.js';
 import { swaggerSpec } from './config/swagger.js';
-import swaggerUi from 'swagger-ui-express'
-const PORT = env.port;
+import swaggerUi from 'swagger-ui-express';
 
-const app: Application = express();
+export const app: Application = express();
 
-app.use(
-'/api-docs',
-swaggerUi.serve,
-swaggerUi.setup(swaggerSpec)
-);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json(), logging);
 
@@ -38,11 +32,5 @@ app.get('/auth', async (_req: Request, res: Response) => {
   });
 });
 
-const startServer = async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log('Server is running on port', PORT);
-  });
-};
 
-startServer();
+

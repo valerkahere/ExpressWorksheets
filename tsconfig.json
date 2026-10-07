@@ -8,11 +8,11 @@
 
     // REQUIRED in TS 7: rootDir defaults to "./", which would emit build/src/app.js
     // and break the existing "start": "node build/app.js" script
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./build",
 
     // REQUIRED in TS 7: types defaults to [], so @types/node is NOT loaded unless listed
-    "types": ["node"],
+    "types": ["node", "vitest/globals"],
 
     // strict is already true by default in TS 7; stated explicitly so the intent
     // survives a future default change
@@ -32,8 +32,8 @@
     // Emit declaration files — these are what carry your JSDoc to any consumer
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
+    "sourceMap": true
   },
-  "include": ["src/**/*", "src"],
+  "include": ["src/**/*", "src", "tests/**/*"],
   "exclude": ["node_modules", "build"]
 }
